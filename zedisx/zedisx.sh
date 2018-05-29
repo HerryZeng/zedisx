@@ -57,10 +57,13 @@ refresh_cache() {
     [[ -d ${CACHE_DIR} ]] || mkdir -p ${CACHE_DIR}
     file=${CACHE_DIR}/data.json
     if [[ $(( `stat -c '%Y' "${file}" 2>/dev/null`+60*${CACHE_TTL} )) -le ${TIMESTAMP} ]]; then
+    #if [[ $(( `stat -c '%Y' "${file}" 2>/dev/null`)) -le ${TIMESTAMP} ]]; then
         if [[ -n ${REDIS_PASS} ]]; then
 	   REDIS_OPTS="-a ${REDIS_PASS}"
+           REDIS_ADDR="-h ${REDIS_ADDR}"
+	   REDIS_PORT="-p ${REDIS_PORT}"
 	fi
-	redis-cli ${REDIS_OPTS} info 2>/dev/null > ${file}
+	redis-cli ${REDIS_OPTS} ${REDIS_ADDR} ${REDIS_PORT} info 2>/dev/null > ${file}
     fi
     echo "${file}"
 }
